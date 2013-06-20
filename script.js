@@ -170,9 +170,24 @@ var readFile = function(filename) {
 		alert('User Media not supported in your browser');
 	}
 
+	var gif = new GIF({
+	  workers: 2,
+	  quality: 10
+	});
+
+	gif.on('finished', function(blob) {
+	  window.open(URL.createObjectURL(blob));
+	});
+
+	function makeGif(){
+	  gif.render();
+	}
+
 	function draw(v, bc, w, h) {
 			bc.drawImage(v, 0, 0, w, h);
 			var stringData=canvas.toDataURL();
+
+			gif.addFrame(canvas, {copy: true});
 			
 			if(fs !== null) {
 				writeToFile('frames' + frames++, stringData);
@@ -190,8 +205,8 @@ var readFile = function(filename) {
 		var back = document.getElementById('canvas');
 		var backcontext = back.getContext('2d');
 
-		cw = 240;
-		ch = 400;
+		cw = 360;
+		ch = 240;
 		back.width = cw;
 		back.height = ch;
 		draw(video, backcontext, cw, ch);
@@ -199,13 +214,6 @@ var readFile = function(filename) {
 	}
 
 	function playVideo() {
-		/*
-		if (!navigator.webkitGetUserMedia) {
-			fallback();
-		} else {
-			navigator.webkitGetUserMedia({video: true}, success, fallback);
-		}
-		*/
 		if (!navigator.getUserMedia) {
 			fallback();
 		} else {
@@ -214,6 +222,7 @@ var readFile = function(filename) {
 	}
 
 document.getElementById('play').addEventListener('click', playVideo, false);
+document.getElementById('makegif').addEventListener('click', makeGif, false);
 
 window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 window.requestFileSystem(window.TEMPORARY, 10*1024*1024, initFs, errorHandler);
