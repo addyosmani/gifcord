@@ -9,6 +9,10 @@ var video = document.querySelector('#video'),
 	_files = []; // store the path of the images recoreded
 
 
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+
 function errorHandler(err){
 error =1 ;
  var msg = 'An error occured: ';
@@ -178,6 +182,7 @@ var readFile = function(filename) {
 			}
 	}
 
+
 	function success(stream) {
 		localMediaStream = stream;
 		video.src = window.webkitURL.createObjectURL(stream);
@@ -194,10 +199,17 @@ var readFile = function(filename) {
 	}
 
 	function playVideo() {
+		/*
 		if (!navigator.webkitGetUserMedia) {
 			fallback();
 		} else {
 			navigator.webkitGetUserMedia({video: true}, success, fallback);
+		}
+		*/
+		if (!navigator.getUserMedia) {
+			fallback();
+		} else {
+			navigator.getUserMedia({video: true}, success, fallback);
 		}
 	}
 
