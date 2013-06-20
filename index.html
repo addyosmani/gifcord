@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>gifcorder</title>
+	<link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<div class="container">
+	<div class="row">
+		<div class="span4">
+			<video id="video" autoplay></video>
+			<canvas id="canvas"></canvas>
+		</div>
+		<div class="replay">
+			<img width=360 height=360 src="" id="replay-screen">
+		</div>
+	</div>
+	<div class="row">
+		<div class="span6 offset4">
+			<a href="#" id="play" class="btn btn-primary btn-large">&#x25BA;</a>
+			<a href="#" id="stop" class="btn btn-primary btn-large">&#x2590;&#x2590;</a>
+			<a href="#" id="replay" class="btn btn-primary btn-large">Replay</a>
+			<a href="#" id="delete-replay" class="btn btn-primary btn-large">Delete Replay</a>
+		</div>
+	</div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+
+<!--
+	An example of using getUserMedia and File API to record the user and store the video as frames in the local filesystem. It's currently set to take 5 pictures each second so the framerate is decent, you can fork it and play around with it. Only tested in Chrome Canary
+-->
