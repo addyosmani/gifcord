@@ -127,10 +127,11 @@ var frameimages = [];
 
 var replayVideo = function(idx) {
 	// reads through all the images and show them (image path stored in _files)
-	
+
 	stopRec(); // stop video recording
 	video.style.display = 'none'; // hide the video to see the recording
 	idx = parseInt(idx,10) || 0;
+
 
 	if(_files[idx] === undefined) {
 		alert('nothing to play');
@@ -143,6 +144,7 @@ var replayVideo = function(idx) {
 			var reader = new FileReader();
 			reader.onloadend = function(e) {
 					img.src = this.result;
+					
 				if(++idx < _files.length) {
 					setTimeout(function(){
 						replayVideo(idx);
@@ -154,14 +156,51 @@ var replayVideo = function(idx) {
 	}, errorHandler);
 };
 
+function timeStamp() {
+// Create a date object with the current time
+  var now = new Date();
+ 
+// Create an array with the current month, day and time
+  var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
+ 
+// Create an array with the current hour, minute and second
+  var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+ 
+// Determine AM or PM suffix based on the hour
+  var suffix = ( time[0] < 12 ) ? "AM" : "PM";
+ 
+// Convert hour from military time
+  time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
+ 
+// If hour is 0, set it to 12
+  time[0] = time[0] || 12;
+ 
+// If seconds and minutes are less than 10, add a zero
+  for ( var i = 1; i < 3; i++ ) {
+    if ( time[i] < 10 ) {
+      time[i] = "0" + time[i];
+    }
+  }
+ 
+// Return the formatted string
+  return date.join("-") + " " + time.join("-") + " " + suffix;
+}
+
+
+// e.g readFile('/Video/lastvideo')
 var readFile = function(filename) {
 	fs.root.getFile(filename, {}, function(fileEntry) {
 		fileEntry.file(function(file) {
 			var reader = new FileReader();
 			reader.onloadend = function(e) {
-				console.log(this.result);
+
+				var myImage = document.createElement('img');
+			     myImage.src = this.result;
+				 document.body.appendChild(myImage);
+
 			};
-			reader.readAsText(file);
+			//reader.readAsText(file);
+			reader.readAsDataURL(file);
 		}, errorHandler);
 	}, errorHandler);
 };
@@ -171,12 +210,38 @@ var readFile = function(filename) {
 	}
 
 	var gif = new GIF({
-	  workers: 2,
-	  quality: 10
+	  workers: 4,
+	  quality: 10,
+	  delay: 1,
+	  repeat: 0
 	});
 
 	gif.on('finished', function(blob) {
-	  window.open(URL.createObjectURL(blob));
+
+
+/*
+ var delta, img;
+
+                    img = document.id('result');
+                    img.src = URL.createObjectURL(blob);
+                    delta = now() - startTime;
+                    return info.set('text', "done in\n" + ((delta / 1000).toFixed(2)) + "sec,\nsize " + ((blob.size / 1000).toFixed(2)) + "kb");
+*/	  
+
+	var file = URL.createObjectURL(blob);
+
+	 // window.open(URL.createObjectURL(blob));
+	 //window.open(file);
+	 
+	 //writeToFile( 'video' + timeStamp(), blob);
+
+	writeToFile('lastvideo', blob);
+
+	 var myImage = document.createElement('img');
+     myImage.src = file;
+	 document.body.appendChild(myImage);
+		
+
 	});
 
 	function makeGif(){
@@ -193,7 +258,8 @@ var readFile = function(filename) {
 				writeToFile('frames' + frames++, stringData);
 			}
 			if(!_stop) {
-				setTimeout(function(){ draw(v, bc, w, h); }, 200); // the timeout here decides video rec framerate
+				//200
+				setTimeout(function(){ draw(v, bc, w, h); }, 100); // the timeout here decides video rec framerate
 			}
 	}
 
@@ -221,8 +287,16 @@ var readFile = function(filename) {
 		}
 	}
 
+	function playLast(){
+		readFile('/Video/lastvideo');
+	}
+
 document.getElementById('play').addEventListener('click', playVideo, false);
 document.getElementById('makegif').addEventListener('click', makeGif, false);
+document.getElementById('playlast').addEventListener('click', playLast, false);
+
 
 window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 window.requestFileSystem(window.TEMPORARY, 10*1024*1024, initFs, errorHandler);
+
+
